@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avatar</title>
+</head>
+<body>
+
+<input id="username" placeholder="اسم المستخدم">
+<button onclick="go()">عرض</button>
+
+<div id="result"></div>
+
+<script>
+async function go(){
+  let u = document.getElementById("username").value;
+
+  let res = await fetch("/avatar",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({username:u})
+  });
+
+  let data = await res.json();
+
+  if(data.image){
+    document.getElementById("result").innerHTML =
+      "<img src='"+data.image+"' width=120>";
+  }else{
+    document.getElementById("result").innerText = "خطأ";
+  }
+}
+</script>
+
+</body>
+</html>
