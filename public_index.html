@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avatar Viewer</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#121417;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.card{
+  background:#1e2124;
+  padding:25px;
+  border-radius:10px;
+  width:320px;
+  text-align:center;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border:none;
+  border-radius:8px;
+  background:#2a2d31;
+  color:white;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+  background:#00a2ff;
+  color:white;
+  font-weight:bold;
+}
+
+.error{
+  color:red;
+  margin-top:5px;
+}
+
+img{
+  margin-top:10px;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h3>عرض صورة حساب</h3>
+
+  <input id="username" placeholder="اسم مستخدم">
+  <div id="error" class="error"></div>
+
+  <button onclick="getAvatar()">عرض</button>
+
+  <div id="result"></div>
+</div>
+
+<script>
+async function getAvatar(){
+  let username = document.getElementById("username").value.trim();
+  let error = document.getElementById("error");
+  let result = document.getElementById("result");
+
+  error.innerText = "";
+  result.innerHTML = "";
+
+  if(username === ""){
+    error.innerText = "اكتب اسم المستخدم";
+    return;
+  }
+
+  try{
+    let res = await fetch(window.location.origin + "/avatar", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({username})
+    });
+
+    let data = await res.json();
+
+    if(data.error){
+      error.innerText = "اسم غير صحيح";
+      return;
+    }
+
+    result.innerHTML = `
+      <img src="${data.image}" width="120"><br>
+      <p>${username}</p>
+    `;
+  }catch{
+    error.innerText = "السيرفر غير شغال";
+  }
+}
+</script>
+
+</body>
+</html>

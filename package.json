@@ -1,5 +1,5 @@
 {
-  "name": "roblox-avatar-viewer",
+  "name": "avatar-viewer",
   "version": "1.0.0",
   "description": "عرض صورة افاتار من Roblox",
   "main": "server.js",

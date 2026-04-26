@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static("public"));
 
-// جلب صورة أفاتار حقيقية من Roblox
+// API جلب صورة أفاتار حقيقية
 app.post("/avatar", async (req, res) => {
   try {
     const username = (req.body.username || "").trim();
@@ -30,10 +30,10 @@ app.post("/avatar", async (req, res) => {
 
     const id = data.data[0].id;
 
-    // جلب صورة الأفاتار
+    // جلب الصورة
     const a = await fetch(
-      "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" 
-      + id + "&size=150x150&format=Png"
+      "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" +
+      id + "&size=150x150&format=Png"
     );
 
     const ad = await a.json();
@@ -48,7 +48,11 @@ app.post("/avatar", async (req, res) => {
   }
 });
 
+// مهم لتجنب Cannot GET /
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
+});
+
 // تشغيل السيرفر
 app.listen(process.env.PORT || 8080, () => {
-  console.log("Server running");
-});
+  console.log("Server
