@@ -1,7 +1,6 @@
 {
-  "name": "avatar-viewer",
+  "name": "mysite",
   "version": "1.0.0",
-  "description": "عرض صورة افاتار من Roblox",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
