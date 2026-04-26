@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login</title>
+<title>Login Demo</title>
 
 <style>
 body{
@@ -11,30 +11,18 @@ body{
   font-family:Arial;
   background:#121417;
   color:white;
-}
-
-.header{
-  display:flex;
-  justify-content:space-between;
-  padding:10px 20px;
-  background:#1a1d21;
-}
-
-.main{
   display:flex;
   justify-content:center;
   align-items:center;
-  height:90vh;
+  height:100vh;
 }
-
 .card{
   background:#1e2124;
   padding:25px;
   border-radius:10px;
-  width:320px;
+  width:300px;
   text-align:center;
 }
-
 input{
   width:100%;
   padding:12px;
@@ -44,7 +32,6 @@ input{
   background:#2a2d31;
   color:white;
 }
-
 button{
   width:100%;
   padding:12px;
@@ -54,7 +41,6 @@ button{
   background:#00a2ff;
   color:white;
 }
-
 .error{
   color:red;
 }
@@ -63,23 +49,15 @@ button{
 
 <body>
 
-<div class="header">
-  <div>ROBLOX</div>
-</div>
+<div class="card">
+  <h3>تجربة تسجيل الدخول</h3>
 
-<div class="main">
-  <div class="card">
+  <input id="username" placeholder="اسم المستخدم">
+  <div id="error" class="error"></div>
 
-    <h3>تسجيل الدخول</h3>
+  <button onclick="getAvatar()">تأكيد</button>
 
-    <input id="username" placeholder="اسم المستخدم">
-    <div id="error" class="error"></div>
-
-    <button onclick="getAvatar()">تأكيد</button>
-
-    <div id="result"></div>
-
-  </div>
+  <div id="result"></div>
 </div>
 
 <script>
@@ -97,7 +75,7 @@ async function getAvatar(){
   }
 
   try{
-    let res = await fetch("/avatar", {
+    let res = await fetch(window.location.origin + "/avatar", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({username})
@@ -106,22 +84,17 @@ async function getAvatar(){
     let data = await res.json();
 
     if(data.error){
-      error.innerText = "اسم غير صحيح";
+      error.innerText = "خطأ";
       return;
     }
 
     result.innerHTML = `
       <img src="${data.image}" width="120"><br>
       <p>${username}</p>
-      <button onclick="enter()">نعم هذا حسابي</button>
     `;
   }catch{
     error.innerText = "السيرفر غير شغال";
   }
-}
-
-function enter(){
-  alert("تم الدخول 🎮");
 }
 </script>
 
