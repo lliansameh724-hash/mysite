@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login Demo</title>
+<title>Avatar Viewer</title>
 
 <style>
 body{
@@ -16,13 +16,15 @@ body{
   align-items:center;
   height:100vh;
 }
+
 .card{
   background:#1e2124;
   padding:25px;
   border-radius:10px;
-  width:300px;
+  width:320px;
   text-align:center;
 }
+
 input{
   width:100%;
   padding:12px;
@@ -32,6 +34,7 @@ input{
   background:#2a2d31;
   color:white;
 }
+
 button{
   width:100%;
   padding:12px;
@@ -40,9 +43,17 @@ button{
   border-radius:8px;
   background:#00a2ff;
   color:white;
+  font-weight:bold;
 }
+
 .error{
   color:red;
+  margin-top:5px;
+}
+
+img{
+  margin-top:10px;
+  border-radius:10px;
 }
 </style>
 </head>
@@ -50,12 +61,12 @@ button{
 <body>
 
 <div class="card">
-  <h3>تجربة تسجيل الدخول</h3>
+  <h3>عرض صورة حساب</h3>
 
-  <input id="username" placeholder="اسم المستخدم">
+  <input id="username" placeholder="اكتب اسم مستخدم Roblox">
   <div id="error" class="error"></div>
 
-  <button onclick="getAvatar()">تأكيد</button>
+  <button onclick="getAvatar()">عرض الصورة</button>
 
   <div id="result"></div>
 </div>
@@ -84,7 +95,7 @@ async function getAvatar(){
     let data = await res.json();
 
     if(data.error){
-      error.innerText = "خطأ";
+      error.innerText = "اسم غير صحيح";
       return;
     }
 
