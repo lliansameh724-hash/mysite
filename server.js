@@ -42,7 +42,7 @@ app.post("/avatar", async (req, res) => {
       image: ad.data[0].imageUrl
     });
 
-  } catch {
+  } catch (e) {
     res.json({error:true});
   }
 });
