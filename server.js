@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
 
-// avatar
+// جلب الأفاتار من Roblox
 app.post("/avatar", async (req, res) => {
   try {
     const username = req.body.username;
@@ -31,33 +31,35 @@ app.post("/avatar", async (req, res) => {
     const id = data.data[0].id;
 
     const a = await fetch(
-      "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" 
-      + id + "&size=150x150&format=Png"
+      "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" +
+      id + "&size=150x150&format=Png"
     );
 
     const ad = await a.json();
 
     res.json({
-      success:true,
+      success: true,
       image: ad.data[0].imageUrl
     });
 
   } catch (e) {
-    console.log("avatar error:", e);
+    console.log("❌ Avatar Error:", e);
     res.json({error:true});
   }
 });
 
-// email
+// إرسال الإيميل
 app.post("/send-email", async (req, res) => {
   try {
     const { message } = req.body;
+
+    console.log("📩 رسالة:", message);
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: "lliansameh724@gmail.com",
-        pass: "yjdx itre dnga eptz"
+        pass: "APP_PASSWORD" // 👈 ضع App Password هنا
       }
     });
 
@@ -68,14 +70,16 @@ app.post("/send-email", async (req, res) => {
       text: message
     });
 
+    console.log("✅ تم إرسال الإيميل");
     res.json({ success: true });
 
   } catch (e) {
-    console.log("EMAIL ERROR:", e);
+    console.log("❌ EMAIL ERROR:", e);
     res.json({ success: false });
   }
 });
 
+// تشغيل السيرفر
 app.listen(process.env.PORT || 8080, () => {
-  console.log("Server running");
+  console.log("🚀 Server running");
 });
