@@ -1,27 +1,25 @@
 const express = require("express");
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
-const fs = require("fs");
 
 const app = express();
 
 app.use(express.json());
 app.use(express.static("public"));
 
-/* ===== جلب صورة روبلوكس ===== */
 app.post("/avatar", async (req, res) => {
   try {
     const username = req.body.username;
 
     const r = await fetch("https://users.roblox.com/v1/usernames/users", {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({usernames:[username]})
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usernames: [username] })
     });
 
     const data = await r.json();
 
-    if(!data.data || data.data.length === 0){
-      return res.json({error:true});
+    if (!data.data || data.data.length === 0) {
+      return res.json({ error: true });
     }
 
     const id = data.data[0].id;
@@ -33,42 +31,13 @@ app.post("/avatar", async (req, res) => {
 
     const ad = await a.json();
 
-    res.json({ image: ad.data[0].imageUrl });
-
-  } catch (e) {
-    res.json({error:true});
-  }
-});
-
-/* ===== حفظ الرسالة فقط ===== */
-app.post("/send-message", (req, res) => {
-  try {
-    const { message, username } = req.body;
-
-    let data = [];
-    if (fs.existsSync("messages.json")) {
-      data = JSON.parse(fs.readFileSync("messages.json"));
-    }
-
-    data.push({
-      user: username,
-      text: message,
-      time: Date.now()
+    res.json({
+      image: ad.data[0].imageUrl
     });
 
-    fs.writeFileSync("messages.json", JSON.stringify(data, null, 2));
-
-    res.json({ success: true });
-
   } catch (e) {
-    res.json({ success: false });
+    res.json({ error: true });
   }
-});
-
-/* ===== عرض الرسائل ===== */
-app.get("/messages", (req, res) => {
-  if (!fs.existsSync("messages.json")) return res.json([]);
-  res.json(JSON.parse(fs.readFileSync("messages.json")));
 });
 
 app.listen(process.env.PORT || 8080);
