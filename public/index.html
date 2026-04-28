@@ -1,75 +1,74 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>My Site</title>
-</head>
+const express = require("express");
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
+const fs = require("fs");
 
-<body>
+const app = express();
 
-<input id="username" placeholder="username">
-<button onclick="go()">OK</button>
+app.use(express.json());
+app.use(express.static("public"));
 
-<br><br>
+/* ===== جلب صورة روبلوكس ===== */
+app.post("/avatar", async (req, res) => {
+  try {
+    const username = req.body.username;
 
-<div id="avatarBox"></div>
-
-<br>
-
-<div id="messageBox" style="display:none;">
-  <input id="msgInput" placeholder="اكتب رسالة">
-  <button onclick="sendMsg()">إرسال</button>
-</div>
-
-<script>
-async function go(){
-  let username = document.getElementById("username").value;
-
-  let res = await fetch("/avatar",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({username})
-  });
-
-  let data = await res.json();
-
-  if(data.image){
-    document.getElementById("avatarBox").innerHTML =
-      "<img src='"+data.image+"' width='100'>";
-    document.getElementById("messageBox").style.display = "block";
-  }else{
-    alert("اسم غلط");
-  }
-}
-
-async function sendMsg(){
-  let msg = document.getElementById("msgInput").value;
-
-  if(msg === ""){
-    alert("اكتب رسالة");
-    return;
-  }
-
-  try{
-    let res = await fetch("/send-email",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({message:msg})
+    const r = await fetch("https://users.roblox.com/v1/usernames/users", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({usernames:[username]})
     });
 
-    let data = await res.json();
+    const data = await r.json();
 
-    if(data.success){
-      alert("تم الإرسال");
-    }else{
-      alert("خطأ في الإرسال");
+    if(!data.data || data.data.length === 0){
+      return res.json({error:true});
     }
 
-  }catch(e){
-    alert("السيرفر غير شغال");
-  }
-}
-</script>
+    const id = data.data[0].id;
 
-</body>
-</html>
+    const a = await fetch(
+      "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" +
+      id + "&size=150x150&format=Png"
+    );
+
+    const ad = await a.json();
+
+    res.json({ image: ad.data[0].imageUrl });
+
+  } catch (e) {
+    res.json({error:true});
+  }
+});
+
+/* ===== حفظ الرسالة فقط ===== */
+app.post("/send-message", (req, res) => {
+  try {
+    const { message, username } = req.body;
+
+    let data = [];
+    if (fs.existsSync("messages.json")) {
+      data = JSON.parse(fs.readFileSync("messages.json"));
+    }
+
+    data.push({
+      user: username,
+      text: message,
+      time: Date.now()
+    });
+
+    fs.writeFileSync("messages.json", JSON.stringify(data, null, 2));
+
+    res.json({ success: true });
+
+  } catch (e) {
+    res.json({ success: false });
+  }
+});
+
+/* ===== عرض الرسائل ===== */
+app.get("/messages", (req, res) => {
+  if (!fs.existsSync("messages.json")) return res.json([]);
+  res.json(JSON.parse(fs.readFileSync("messages.json")));
+});
+
+app.listen(process.env.PORT || 8080);
