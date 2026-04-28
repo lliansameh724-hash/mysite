@@ -1,13 +1,68 @@
 <!DOCTYPE html>
 <html>
+<head>
+<meta charset="UTF-8">
+<title>Roblox Avatar</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color:white;
+  text-align:center;
+}
+
+.box{
+  background:white;
+  color:black;
+  width:300px;
+  margin:100px auto;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 0 20px rgba(0,0,0,0.3);
+}
+
+input{
+  width:90%;
+  padding:10px;
+  margin:10px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+button{
+  padding:10px 20px;
+  background:#667eea;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#5563c1;
+}
+
+img{
+  margin-top:15px;
+  border-radius:10px;
+}
+</style>
+
+</head>
+
 <body>
 
-<input id="username" placeholder="اسم روبلوكس">
-<button onclick="getAvatar()">OK</button>
+<div class="box">
+  <h2>Roblox Avatar</h2>
 
-<br><br>
+  <input id="username" placeholder="اكتب اسم روبلوكس">
+  <br>
+  <button onclick="getAvatar()">عرض</button>
 
-<div id="avatar"></div>
+  <div id="avatar"></div>
+</div>
 
 <script>
 async function getAvatar(){
@@ -23,9 +78,9 @@ async function getAvatar(){
 
   if(data.image){
     document.getElementById("avatar").innerHTML =
-      "<img src='"+data.image+"' width='100'>";
+      "<img src='"+data.image+"' width='120'>";
   }else{
-    alert("اسم غلط");
+    alert("اسم غير صحيح");
   }
 }
 </script>
