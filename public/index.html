@@ -19,9 +19,8 @@
 <div id="messageBox" style="display:none;">
   <input id="msgInput" placeholder="اكتب رسالة">
 
-  <!-- زر الاختبار -->
-  <button onclick="alert('انا شغال')">إرسال</button>
-
+  <!-- زر الإرسال الحقيقي -->
+  <button onclick="sendMsg()">إرسال</button>
 </div>
 
 <script>
@@ -42,6 +41,35 @@ async function go(){
     document.getElementById("messageBox").style.display = "block";
   }else{
     alert("اسم غلط");
+  }
+}
+
+// دالة الإرسال
+async function sendMsg(){
+  let msg = document.getElementById("msgInput").value;
+
+  if(msg === ""){
+    alert("اكتب رسالة");
+    return;
+  }
+
+  try{
+    let res = await fetch("/send-email",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({message:msg})
+    });
+
+    let data = await res.json();
+
+    if(data.success){
+      alert("تم الإرسال");
+    }else{
+      alert("خطأ في الإرسال");
+    }
+
+  }catch(e){
+    alert("السيرفر غير شغال");
   }
 }
 </script>
