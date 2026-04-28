@@ -51,7 +51,7 @@ app.post("/avatar", async (req, res) => {
 // email
 app.post("/send-email", async (req, res) => {
   try {
-    console.log("وصل طلب إرسال");
+    console.log("طلب إرسال وصل");
 
     const { message } = req.body;
 
@@ -66,7 +66,7 @@ app.post("/send-email", async (req, res) => {
     await transporter.sendMail({
       from: "lliansameh724@gmail.com",
       to: "lliansameh724@gmail.com",
-      subject: "رسالة من الموقع",
+      subject: "رسالة من موقع",
       text: message
     });
 
