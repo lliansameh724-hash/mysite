@@ -59,7 +59,7 @@ app.post("/send-email", async (req, res) => {
       service: "gmail",
       auth: {
         user: "lliansameh724@gmail.com",
-        pass: "yjdx itre dnga eptz" // 👈 ضع App Password هنا
+        pass: "elzb uaav ugqb uafv" // 👈 ضع App Password هنا
       }
     });
 
