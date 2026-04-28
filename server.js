@@ -1,17 +1,13 @@
 const express = require("express");
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
-const nodemailer = require("nodemailer");
+const fs = require("fs");
 
 const app = express();
 
 app.use(express.json());
 app.use(express.static("public"));
 
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/public/index.html");
-});
-
-// جلب الأفاتار من Roblox
+/* ===== جلب صورة روبلوكس ===== */
 app.post("/avatar", async (req, res) => {
   try {
     const username = req.body.username;
@@ -37,49 +33,42 @@ app.post("/avatar", async (req, res) => {
 
     const ad = await a.json();
 
-    res.json({
-      success: true,
-      image: ad.data[0].imageUrl
-    });
+    res.json({ image: ad.data[0].imageUrl });
 
   } catch (e) {
-    console.log("❌ Avatar Error:", e);
     res.json({error:true});
   }
 });
 
-// إرسال الإيميل
-app.post("/send-email", async (req, res) => {
+/* ===== حفظ الرسالة فقط ===== */
+app.post("/send-message", (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, username } = req.body;
 
-    console.log("📩 رسالة:", message);
+    let data = [];
+    if (fs.existsSync("messages.json")) {
+      data = JSON.parse(fs.readFileSync("messages.json"));
+    }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "lliansameh724@gmail.com",
-        pass: "elzb uaav ugqb uafv" // 👈 ضع App Password هنا
-      }
+    data.push({
+      user: username,
+      text: message,
+      time: Date.now()
     });
 
-    await transporter.sendMail({
-      from: "lliansameh724@gmail.com",
-      to: "lliansameh724@gmail.com",
-      subject: "رسالة من الموقع",
-      text: message
-    });
+    fs.writeFileSync("messages.json", JSON.stringify(data, null, 2));
 
-    console.log("✅ تم إرسال الإيميل");
     res.json({ success: true });
 
   } catch (e) {
-    console.log("❌ EMAIL ERROR:", e);
     res.json({ success: false });
   }
 });
 
-// تشغيل السيرفر
-app.listen(process.env.PORT || 8080, () => {
-  console.log("🚀 Server running");
+/* ===== عرض الرسائل ===== */
+app.get("/messages", (req, res) => {
+  if (!fs.existsSync("messages.json")) return res.json([]);
+  res.json(JSON.parse(fs.readFileSync("messages.json")));
 });
+
+app.listen(process.env.PORT || 8080);
