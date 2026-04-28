@@ -3,6 +3,7 @@ const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fet
 const nodemailer = require("nodemailer");
 
 const app = express();
+
 app.use(express.json());
 app.use(express.static("public"));
 
@@ -10,50 +11,55 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
 
-// Avatar من Roblox
+// avatar
 app.post("/avatar", async (req, res) => {
   try {
-    const username = (req.body.username || "").trim();
-    if (!username) return res.json({ error: true });
+    const username = req.body.username;
 
     const r = await fetch("https://users.roblox.com/v1/usernames/users", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ usernames: [username] })
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({usernames:[username]})
     });
+
     const data = await r.json();
 
-    if (!data.data || data.data.length === 0) {
-      return res.json({ error: true });
+    if(!data.data || data.data.length === 0){
+      return res.json({error:true});
     }
 
     const id = data.data[0].id;
 
     const a = await fetch(
-      "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" +
-        id +
-        "&size=150x150&format=Png"
+      "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" 
+      + id + "&size=150x150&format=Png"
     );
+
     const ad = await a.json();
 
-    res.json({ success: true, image: ad.data[0].imageUrl });
+    res.json({
+      success:true,
+      image: ad.data[0].imageUrl
+    });
+
   } catch (e) {
     console.log("avatar error:", e);
-    res.json({ error: true });
+    res.json({error:true});
   }
 });
 
-// إرسال Email
+// email
 app.post("/send-email", async (req, res) => {
   try {
+    console.log("وصل طلب إرسال");
+
     const { message } = req.body;
-    if (!message) return res.json({ success: false });
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: "lliansameh724@gmail.com",
-        pass: "qunh brsq ltzy mpmo" // ← غيّرها فقط
+        pass: "qunh brsq ltzy mpmo"
       }
     });
 
@@ -64,10 +70,11 @@ app.post("/send-email", async (req, res) => {
       text: message
     });
 
-    console.log("email sent");
+    console.log("تم الإرسال");
     res.json({ success: true });
+
   } catch (e) {
-    console.log("email error:", e);
+    console.log("EMAIL ERROR:", e);
     res.json({ success: false });
   }
 });
