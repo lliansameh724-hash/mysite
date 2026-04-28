@@ -48,33 +48,39 @@ app.post("/avatar", async (req, res) => {
   }
 });
 
-// email
+// اختبار + إرسال إيميل
 app.post("/send-email", async (req, res) => {
-  try {
-    console.log("طلب إرسال وصل");
 
+  console.log("🚀 تم استدعاء /send-email");
+
+  try {
     const { message } = req.body;
+    console.log("📩 الرسالة:", message);
+
+    // ====== جرّب بدون إيميل أولاً ======
+    // احذف التعليق من السطر التالي لو أردت اختبار فقط
+    // return res.json({ success: true });
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: "lliansameh724@gmail.com",
-        pass: "qunh brsq ltzy mpmo"
+        pass: "qunh brsq ltzy mpmo" // ضع كودك هنا
       }
     });
 
     await transporter.sendMail({
       from: "lliansameh724@gmail.com",
       to: "lliansameh724@gmail.com",
-      subject: "رسالة من موقع",
+      subject: "رسالة من الموقع",
       text: message
     });
 
-    console.log("تم الإرسال");
+    console.log("✅ تم إرسال الإيميل");
     res.json({ success: true });
 
   } catch (e) {
-    console.log("EMAIL ERROR:", e);
+    console.log("❌ EMAIL ERROR:", e);
     res.json({ success: false });
   }
 });
