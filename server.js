@@ -7,7 +7,6 @@ const app = express();
 app.use(express.json());
 app.use(express.static("public"));
 
-// الصفحة الرئيسية
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
@@ -16,7 +15,6 @@ app.get("/", (req, res) => {
 app.post("/avatar", async (req, res) => {
   try {
     const username = (req.body.username || "").trim();
-    if (!username) return res.json({ error: true });
 
     const r = await fetch("https://users.roblox.com/v1/usernames/users", {
       method: "POST",
@@ -25,6 +23,7 @@ app.post("/avatar", async (req, res) => {
     });
 
     const data = await r.json();
+
     if (!data.data || data.data.length === 0) {
       return res.json({ error: true });
     }
@@ -44,22 +43,22 @@ app.post("/avatar", async (req, res) => {
       image: ad.data[0].imageUrl
     });
 
-  } catch {
+  } catch (e) {
+    console.log("Avatar error:", e);
     res.json({ error: true });
   }
 });
 
-// إرسال Email
+// إرسال الإيميل
 app.post("/send-email", async (req, res) => {
   try {
     const { message } = req.body;
-    if (!message) return res.json({ success: false });
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: "lliansameh724@gmail.com",
-        pass: "qunh brsq ltzy mpmo" // 👈 ضع هنا App Password
+        pass: "qunh brsq ltzy mpmo" // ضع كودك هنا
       }
     });
 
@@ -70,13 +69,15 @@ app.post("/send-email", async (req, res) => {
       text: message
     });
 
+    console.log("Email sent");
     res.json({ success: true });
-  } catch {
+
+  } catch (e) {
+    console.log("Email error:", e);
     res.json({ success: false });
   }
 });
 
-// تشغيل السيرفر
 app.listen(process.env.PORT || 8080, () => {
   console.log("Server running");
 });
