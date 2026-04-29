@@ -2,69 +2,68 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Roblox Avatar</title>
+<title>Secret Messages</title>
 
 <style>
 body{
-  margin:0;
+  background: linear-gradient(135deg,#667eea,#764ba2);
   font-family:Arial;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color:white;
   text-align:center;
+  color:white;
 }
 
 .box{
   background:white;
   color:black;
   width:300px;
-  margin:100px auto;
+  margin:80px auto;
   padding:20px;
   border-radius:15px;
-  box-shadow:0 0 20px rgba(0,0,0,0.3);
 }
 
 input{
   width:90%;
   padding:10px;
-  margin:10px 0;
-  border-radius:8px;
-  border:1px solid #ccc;
+  margin:10px;
 }
 
 button{
-  padding:10px 20px;
+  padding:10px;
   background:#667eea;
   color:white;
   border:none;
   border-radius:8px;
-  cursor:pointer;
-}
-
-button:hover{
-  background:#5563c1;
-}
-
-img{
-  margin-top:15px;
-  border-radius:10px;
 }
 </style>
-
 </head>
 
 <body>
 
 <div class="box">
-  <h2>Roblox Avatar</h2>
 
-  <input id="username" placeholder="اكتب اسم روبلوكس">
-  <br>
-  <button onclick="getAvatar()">عرض</button>
+<h3>Roblox</h3>
 
-  <div id="avatar"></div>
+<input id="username" placeholder="اسم روبلوكس">
+<button onclick="getAvatar()">OK</button>
+
+<div id="avatar"></div>
+
+<div id="secretBox" style="display:none;">
+  <input id="msgInput" placeholder="إرسال سري">
+  <button onclick="sendMsg()">إرسال</button>
+</div>
+
+<hr>
+
+<input id="secretCode" placeholder="كود مشاهدة الرسائل">
+<button onclick="check()">عرض</button>
+
+<div id="msgs" style="display:none;"></div>
+
 </div>
 
 <script>
+// جلب الأفاتار
 async function getAvatar(){
   let username = document.getElementById("username").value;
 
@@ -79,9 +78,56 @@ async function getAvatar(){
   if(data.image){
     document.getElementById("avatar").innerHTML =
       "<img src='"+data.image+"' width='120'>";
+
+    document.getElementById("secretBox").style.display = "block";
   }else{
-    alert("اسم غير صحيح");
+    alert("اسم غلط");
   }
+}
+
+// إرسال الرسالة
+async function sendMsg(){
+  let msg = document.getElementById("msgInput").value;
+  let username = document.getElementById("username").value;
+
+  let res = await fetch("/send-message",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({message:msg, username:username})
+  });
+
+  let data = await res.json();
+
+  if(data.success){
+    alert("تم الإرسال");
+  }else{
+    alert("خطأ");
+  }
+}
+
+// التحقق من الكود
+function check(){
+  let code = document.getElementById("secretCode").value;
+
+  if(code === "123321456654"){
+    loadMessages();
+  }else{
+    alert("كود خطأ");
+  }
+}
+
+// عرض الرسائل
+async function loadMessages(){
+  let res = await fetch("/messages");
+  let data = await res.json();
+
+  let html = "";
+  data.reverse().forEach(m=>{
+    html += "<p>"+m.user+" : "+m.text+"</p><hr>";
+  });
+
+  document.getElementById("msgs").innerHTML = html;
+  document.getElementById("msgs").style.display = "block";
 }
 </script>
 
